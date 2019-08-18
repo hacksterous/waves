@@ -1,0 +1,71 @@
+::
+::Format = <signal name> : [<command>]* ... + <[coord]*>^<data string>: [<data annotation>,]...
+::Each command creates its own grid which can be made visible by adding a '|' before the command.
+::The visible grid can be suppressed for all succeeding commands by a '!'
+::Waveforms can be annoted by <data> for each grid. The default width of the data is the same as
+::the grid. This can be changed by adding as described later.
+:: 
+::The signal name appears before the colon followed by commands and then the annotation data.
+
+::COMMANDS
+::P... high frequency pulse
+:|PPPPPPPPP:
+:|~PPPPPPPPP
+::'~' inverts a clock or pulse and the active edge and can occur multiple times in a wave line.
+:
+::p: low frequency pulse
+:ppppppppp:,,,,non-inverted clock with pppp*0
+:
+:~ppppppppp:,,,,inverted clock with ~pppp*0
+:
+::k... clock with active falling edge
+:kkkkkkkkk:0,1,2,3,4,5,6,7
+::
+::K or C... clock with dual active edges
+     :KKKKKCCCC
+::c... clock with active rising edge grids enabled from start
+  clk:|cccccccCC:
+::clock with active rising edge grid disabled after 3 time periods.
+  clk:|cccc!cccCC:
+::A write signal with annotation. Add *<number> at end of string to adjust
+::wrap length. <number> is the number of clock period grids.
+::*0 disables wrapping completely for inputs lines with waveforms.
+::An annotation line with only text and no waveform has to start with "::"
+::
+write:|lrhflllll+60,-10,120,57:          '1' for 2 clocks*0,,            then low *0
+::l ... low signal;   r ... rise; h ... stay high; f ...fall*0
+low signal:|lllrhhf:low now*3,,going high,stay high*3,,fall now
+::A similar read signal*0
+ read:|llllrhhfl:'l' is for Low*0,,,r = rise ,wrapped annotation..     h for high*2,, f   =  fall*4
+::
+::x and X are unknown data bus values. 'D' is a data transition.
+::and d is data continuation.
+::
+ addr:|xDdxDddxX:,          A1*0,,,                 A2*0
+wdata:|xDdxxxxxX:,    D1
+::'<' inserts a left-facing arrow.
+:<-:'<' inserts a left facing arrow*80
+::Arrow comments are spaced as *<number> <number> is
+::pixels from the first grid
+::'-' is an arrow shaft '>' closes the arrow.*0
+     :|<-------->:,,,20ns*170,
+  ack:|xfrxflrxX:d
+
+::'/' gives a discontinuity in the waveform
+    someXdata:xx/xxX
+     :|<>:1ns*11,
+rdata:xxxxxxdxX:,,,,,,    Q2
+     :|sssss
+
+::Other Features
+::An arrow is specified in the command field as a + followed by (X0, Y0) and (X1, Y1) cartesian coordinates.
+::A data string can be inserted in the command field as a ^ followed by (X0, Y0).
+
+
+
+
+
+
+
+
+
